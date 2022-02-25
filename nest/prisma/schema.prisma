@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Clients {
+  id         String    @id @default(uuid())
+  name       String
+  address    String
+  complement String?
+  number     String
+  city       String
+  district   String
+  state      String
+  zipcode    String
+  create_at  DateTime  @default(now())
+  update_at  DateTime?
+
+  Contacts Contacts[]
+  Products Products[]
+  Orders   Orders[]
+
+  @@map("clients")
+}
+
+model Contacts {
+  id        String    @id @default(uuid())
+  name      String
+  comments  String?
+  create_at DateTime  @default(now())
+  update_at DateTime?
+
+  client       Clients @relation(fields: [fk_id_client], references: [id])
+  fk_id_client String
+
+  Phones Phones[]
+  @@map("contacts")
+}
+
+model Phones {
+  id        String    @id @default(uuid())
+  number    String
+  comments  String?
+  create_at DateTime  @default(now())
+  update_at DateTime?
+
+  contact       Contacts @relation(fields: [fk_id_contact], references: [id])
+  fk_id_contact String
+
+  @@map("phones")
+}
+
+model Products {
+  id          String    @id @default(uuid())
+  name        String
+  price       Decimal
+  cost        Decimal?
+  percent     Decimal?
+  label       String
+  description String?
+  create_at   DateTime  @default(now())
+  update_at   DateTime?
+
+  client       Clients @relation(fields: [fk_id_client], references: [id])
+  fk_id_client String
+
+  Orders       Orders[]
+  Compositions Compositions[]
+  @@map("products")
+}
+
+model Compositions {
+  id        String    @id @default(uuid())
+  name      String
+  quantity  Decimal
+  price     Decimal
+  unit      Unit      @default(UN)
+  create_at DateTime  @default(now())
+  update_at DateTime?
+
+  product       Products @relation(fields: [fk_id_product], references: [id])
+  fk_id_product String
+
+
+  @@map("compositions")
+}
+
+model Orders {
+  id             String    @id @default(uuid())
+  control        Int       @default(autoincrement())
+  quantity       Int
+  total          Decimal   @default(0.00)
+  date_ready     DateTime? @default(now())
+  date_out       DateTime?
+  name_collector String?
+  comments       String?
+  create_at      DateTime  @default(now())
+  update_at      DateTime?
+
+  fk_id_client String
+  client       Clients @relation(fields: [fk_id_client], references: [id])
+
+  fk_id_product String
+  product       Products @relation(fields: [fk_id_product], references: [id])
+
+  @@map("orders")
+}
+
+enum Unit {
+  UN
+  LT
+  KG
+  MT
+  CM
+  MM
+  ML
+  PC
+  KW
+}

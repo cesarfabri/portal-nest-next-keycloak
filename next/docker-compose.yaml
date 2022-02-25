@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    entrypoint: ./entrypoint.sh
+    ports:
+      - 3007:3000
+    volumes:
+      - .:/home/node/app
+    extra_hosts: 
+      - "host.docker.internal:172.17.0.1"
+
+  

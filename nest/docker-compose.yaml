@@ -1,0 +1,55 @@
+version: '3.1'
+
+volumes:
+  dbdata:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-server
+    build: ./.docker/postgres
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    env_file: ./.env
+    environment:
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD 
+    ports:
+      - 5446:5432
+
+  keycloak:
+    image: jboss/keycloak
+    container_name: keycloak-server
+    env_file: ./.env
+    environment:
+      DB_VENDOR: $DB_VENDOR
+      DB_ADDR: $DB_ADDR
+      DB_DATABASE: $DB_DATABASE
+      DB_USER: $DB_USER
+      DB_PASSWORD: $DB_PASSWORD
+      KEYCLOAK_USER: $KEYCLOAK_USER
+      KEYCLOAK_PASSWORD: $KEYCLOAK_PASSWORD
+    ports:
+      - 8086:8080
+    depends_on:
+      - postgres
+
+  app:
+    build: .
+    container_name: appk-server
+    env_file: ./.env
+    # entrypoint: dockerize -wait tcp://postgres:5432 -timeout 40s ./entrypoint.sh
+    ports:
+      - 3006:3006
+    volumes:
+      - .:/home/node/app
+    environment:
+      - POSTGRES_DB=fin
+      - POSTGRES_USER= $POSTGRES_USER
+      - POSTGRES_PASSWORD= $POSTGRES_PASSWORD
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+    depends_on:
+      - postgres
