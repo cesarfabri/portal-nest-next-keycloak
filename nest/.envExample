@@ -1,0 +1,15 @@
+DATABASE_URL="postgresql://user:password@localhost:5446/app-nest-next?schema=public"
+
+POSTGRES_DB=keycloak
+POSTGRES_USER=name
+POSTGRES_PASSWORD=password
+
+DB_VENDOR=POSTGRES
+DB_ADDR=postgres
+DB_DATABASE=keycloak
+DB_USER=name
+DB_PASSWORD=password
+KEYCLOAK_USER=admin
+KEYCLOAK_PASSWORD=password
+
+JWT_SECRET="-----BEGIN PUBLIC KEY-----\n<secret>\n-----END PUBLIC KEY-----"
